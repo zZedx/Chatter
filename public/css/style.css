@@ -1,0 +1,69 @@
+body , html{
+    margin: 0;
+    padding: 0;
+    box-sizing: 0;
+    background-image: linear-gradient(to bottom left , #C44C8C, #254eae)
+}
+.alert{
+    width: 60%;
+    margin: auto;
+    opacity: 0.4;
+    transition: all 3s;
+}
+main{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginForm{
+    background-color: white;
+    padding: 0px 40px 15px;
+}
+.loginForm form{
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+}
+.username ,.password{
+    min-width:100%;
+    border: none;
+    outline: none;
+    background-color: rgb(230, 230, 230);
+    margin-bottom: 15px;
+    padding: 10px 20px;
+}
+.loginBtn{
+    margin: 15px 0;
+    border: none;
+    outline: none;
+    color: white;
+    font-weight: bold;
+    background-color: rgb(196, 76, 138);
+    border-radius: 0;
+    padding: 10px 20px;
+}
+
+.extraOptions button{
+    padding: 6px 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+} 
+.extraOptions img{
+    height: 20px;
+    margin-right: 5px;
+}
+.loginForm span{
+    display: block;
+    text-align: center;
+    margin-top: 100px;
+}
+
+@media(max-width:440px) {
+    .loginForm form{
+        width:100%;
+    }
+}
