@@ -80,6 +80,9 @@ main{
 .togglePasswordError{
     display: none;
 }
+footer{
+    z-index: 1;
+}
 @media(max-width:440px) {
     .loginForm form{
         width:100%;

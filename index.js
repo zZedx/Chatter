@@ -114,6 +114,7 @@ app.use('/', (req, res, next) => {
     if (req.user) {
         next()
     } else {
+        req.flash('error' , 'Login Required')
         res.redirect('/login')
     }
 })
