@@ -24,7 +24,7 @@ body , html{
     width: 40%;
     margin-top: 10vh;
     opacity: 0.6;
-    transition: all 1s;
+    transition: all 0.5s;
 }
 main{
     height: 100%;
@@ -33,11 +33,11 @@ main{
     align-items: center;
 }
 
-.loginForm{
+.loginForm ,.registerForm{
     background-color: white;
     padding: 0px 40px 15px;
 }
-.loginForm form{
+.loginForm form ,.registerForm form{
     display: flex;
     flex-direction: column;
     width: 350px;
@@ -72,12 +72,14 @@ main{
     height: 20px;
     margin-right: 5px;
 }
-.loginForm span{
+.loginForm .sub,.registerForm .sub{
     display: block;
     text-align: center;
     margin-top: 100px;
 }
-
+.togglePasswordError{
+    display: none;
+}
 @media(max-width:440px) {
     .loginForm form{
         width:100%;

@@ -1,13 +1,21 @@
 <%- layout('/layouts/boilerplate') %>
 
-  <div class="loginForm shadow">
+  <div class="registerForm shadow">
     <h1 class="text-center my-5">REGISTER</h1>
-    <form action="/register" method="post" class="needs-validation" novalidate>
-      <input type="text" class="username form-control" name="username" placeholder="Username" required>
-      <input type="password" class="password form-control" name="pass" placeholder="Password" required>
-      <input type="password" class="password form-control" name="password" placeholder="Confirm Password" required>
+    <form action="/register" method="post" class="needs-validation" id="form" novalidate>
+      <input type="text" class="username regUsername form-control" name="username" placeholder="Username" required>
+      <input type="password" class="pass password form-control" name="pass" placeholder="Password" required>
+      <input type="password" class="confirmPass password form-control" name="password" placeholder="Confirm Password" required>
+      <div id="passwordError" class="togglePasswordError">
+        <span class="text-danger">Password does not match</span>
+      </div>
+      <div id="passwordError2" class="togglePasswordError">
+        <span class="text-danger">Password must be 6-20 characters</span>
+      </div>
       <button class="loginBtn my-4">Register</button>
-        <span class="text-secondary">Already have an acount <a href="/login" class="link-secondary">Login</a></span>
+        <span class="text-secondary sub">Already have an acount <a href="/login" class="link-secondary">Login</a></span>
     </form>
     <!-- <span class="text-secondary">Not a member? <a href="/register" class="link-secondary">Sign up now</a></span> -->
   </div>
+
+  <script src="/registerForm.js"></script>

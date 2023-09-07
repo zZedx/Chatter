@@ -67,23 +67,25 @@ app.get('/register', (req, res) => {
     res.render('user/register')
 })
 
-app.post('/register', CatchAsync(async (req, res, next) => {
+// app.use(express.json());
+app.post('/register', express.json(), CatchAsync(async (req, res, next) => {
     try {
         const { username, password } = req.body
         const user = new User({ username });
-        await user.setPassword(password);
-        await user.save();
-        req.login(user, (err) => {
-            if (err) return next(err)
-            req.flash('success', 'Welcome')
-            return res.redirect('/chatter')
+        const registeredUser = await User.register(user , password);
+        // await user.save();
+        req.login(registeredUser, (err) => {
+            if (err){
+                console.log('err')
+                return next(err)
+            }
+                return res.redirect('/chatter')
         })
     }
     catch (e) {
         if (e.message.includes('E11000')) {
             e.message = "A user already exist with this username."
         }
-        req.flash('error', e.message)
         res.redirect('/register')
     }
 }))
