@@ -4,11 +4,27 @@ body , html{
     box-sizing: 0;
     background-image: linear-gradient(to bottom left , #C44C8C, #254eae)
 }
-.alert{
+.error{
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    top: 10vh;
     width: 60%;
-    margin: auto;
-    opacity: 0.4;
-    transition: all 3s;
+    /* height: 40%; */
+    text-align: center;
+}
+.flash{
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 40%;
+    margin-top: 10vh;
+    opacity: 0.6;
+    transition: all 1s;
 }
 main{
     height: 100%;
