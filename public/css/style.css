@@ -16,6 +16,7 @@ body , html{
     text-align: center;
 }
 .flash{
+    /* height: fit-content; */
     position: absolute;
     margin-left: auto;
     margin-right: auto;
