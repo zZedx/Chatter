@@ -140,20 +140,23 @@ io.use(sharedsession(sessionConfig, {
     autoSave: true // Optional, saves session data back to session store
 }));
 
-io.on('connection', (socket) => {
-    const currentUser = socket.handshake.session.UserData;
-    io.emit('user connected', currentUser.username)
-    socket.on('chat message', async (msg) => {
-        const message = new Message({ message: msg })
-        message.author = currentUser
-        await message.save()
-        await message.populate('author')
-        // console.log(message)
-        io.emit('chat message', message, currentUser._id)
-    });
-    socket.on('user disconnected', () => {
-        io.emit('user connected')
-    });
+io.on('connection', (socket ,next) => {
+    try{
+        const currentUser = socket.handshake.session.UserData;
+        io.emit('user connected', currentUser.username)
+        socket.on('chat message', async (msg) => {
+            const message = new Message({ message: msg })
+            message.author = currentUser
+            await message.save()
+            await message.populate('author')
+            io.emit('chat message', message, currentUser._id)
+        });
+        }catch(e){
+        next(new ExpressError("Page Not Found", 401))
+        }
+        socket.on('user disconnected', () => {
+            io.emit('user connected')
+        });
 });
 
 app.get('/chatter', async (req, res) => {
