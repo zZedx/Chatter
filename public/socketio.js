@@ -4,6 +4,10 @@ const form = document.getElementById('form');
 const input = document.querySelector('#input');
 const messages = document.querySelector('#messages')
 
+window.addEventListener('load' , ()=>{
+  messages.scrollTop = messages.scrollHeight
+})
+
 form.addEventListener('submit', function(e) {
   e.preventDefault();
   if (input.value) {
@@ -13,13 +17,19 @@ form.addEventListener('submit', function(e) {
 });
 socket.on('chat message', function(msg) {
     const item = document.createElement('div');
-    item.classList.add('rightMessages')
+    console.log(msg.author._id)
+    console.log(userid)
+    if(msg.author._id === userid){
+      item.classList.add('rightMessages')
+    }else{
+      item.classList.add('leftMessages')
+    }
     item.innerHTML = `
         <span>${msg.author.username}</span>
         <p>${msg.message}</p>
     `
     messages.appendChild(item);
-    messages.scrollTo(0, document.body.scrollHeight);
+    messages.scrollTop = messages.scrollHeight
 });
 
 const userFlash = document.querySelector('.userFlash')

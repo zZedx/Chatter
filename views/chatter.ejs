@@ -5,15 +5,22 @@
         <p></p>
         <button type="button" class="btn-close alertbtn" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+ 
         <div id="messages" class="messages">
-            <div class="leftMessages">
+            <% allMessages.forEach(element => { %>
+                <div class="<%= element.author.id ===currentUser.id ? 'rightMessages' : 'leftMessages' %>">
+                    <span> <%=element.author.username%></span>
+                    <p><%=element.message%></p>
+                </div>
+            <%}); %>
+            <!-- <div class="leftMessages">
                 <span>Username</span>
                 <p>ggisfi adiadiai dawidaiwsidai dwa</p>
             </div>
             <div class="rightMessages">
                 <span>Username</span>
                 <p>adawd awdawd,law;dm awkmdakw mdaw dawda</p>
-            </div>
+            </div> -->
         </div>
         <form id="form" action="" class="needs-validation messageForm" novalidate>
             <input type="text" id="input" class="messageInput" placeholder="eg. Hello" required>
@@ -24,5 +31,5 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/socketio.js"></script>
 <script>
-    const username = '<%- currentUser.username%>'
+    const userid = '<%- currentUser.id%>'
 </script>

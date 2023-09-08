@@ -136,15 +136,17 @@ io.on('connection',(socket ) => {
         await message.save()
         await message.populate('author')
         console.log(message)
-        io.emit('chat message' , message)
+        io.emit('chat message' , message , currentUser._id)
       });
     socket.on('user disconnected', () => {
         io.emit('user connected')
       });
 });
 
-app.get('/chatter', (req, res) => {
-    res.render('chatter')
+app.get('/chatter', async(req, res) => {
+    const allMessages = await Message.find({}).populate('author').exec();
+    console.log(allMessages)
+    res.render('chatter', {allMessages})
 })
 
 app.use('*', (req, res, next) => {
