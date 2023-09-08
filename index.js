@@ -8,10 +8,16 @@ const passport = require('passport')
 const session = require('express-session')
 const flash = require('express-flash')
 const path = require('path')
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+const sharedsession = require("express-socket.io-session");
 
 
 const ExpressError = require('./utils/ExpressError')
 const CatchAsync = require('./utils/CatchAsync')
+const Message = require('./models/messages')
 
 
 const User = require('./models/user')
@@ -24,7 +30,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/Chatter')
         console.log(e);
     })
 
-const sessionConfig = {
+const sessionConfig = session({
     name: 'localsession',
     secret: 'this is secret',
     resave: false,
@@ -34,9 +40,11 @@ const sessionConfig = {
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
-}
+})
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
 
-app.use(session(sessionConfig))
+app.use(sessionConfig)
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
@@ -55,9 +63,6 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user
     next()
 })
-
-passport.serializeUser(User.serializeUser())
-passport.deserializeUser(User.deserializeUser())
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -95,7 +100,7 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), CatchAsync(async (req, res) => {
-    req.flash('success', 'Welcome !')
+    req.session.UserData = req.user
     res.redirect('/chatter')
 }))
 
@@ -105,7 +110,6 @@ app.get('/logout', (req, res) => {
             return next(err)
         }
     });
-    // const redirectUrl = res.locals.returnTo || '/campgrounds';
     req.flash('success', 'Logged Out')
     res.redirect('/')
 })
@@ -118,6 +122,26 @@ app.use('/', (req, res, next) => {
         res.redirect('/login')
     }
 })
+
+io.use(sharedsession(sessionConfig, {
+    autoSave: true // Optional, saves session data back to session store
+  }));
+
+io.on('connection',(socket ) => {
+    const currentUser = socket.handshake.session.UserData;
+    io.emit('user connected' , currentUser.username)
+    socket.on('chat message', async(msg) => {
+        const message = new Message({message:msg})
+        message.author = currentUser
+        await message.save()
+        await message.populate('author')
+        console.log(message)
+        io.emit('chat message' , message)
+      });
+    socket.on('user disconnected', () => {
+        io.emit('user connected')
+      });
+});
 
 app.get('/chatter', (req, res) => {
     res.render('chatter')
@@ -133,6 +157,6 @@ app.use((err, req, res, next) => {
     res.status(status).render('error', { err })
 })
 
-app.listen(3000, () => {
+server.listen(3000, () => {
     console.log('Listening')
 })

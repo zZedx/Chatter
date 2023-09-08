@@ -2,22 +2,27 @@
 
 <div class="chatterMain">
     <div class="alert alert-success alert-dismissible fade show userFlash text-center" role="alert">
-        <p>User Joined</p>
+        <p></p>
         <button type="button" class="btn-close alertbtn" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="messages">
-        <div class="leftMessages">
-            <span>Username</span>
-            <p>ggisfi adiadiai dawidaiwsidai dwa</p>
+        <div id="messages" class="messages">
+            <div class="leftMessages">
+                <span>Username</span>
+                <p>ggisfi adiadiai dawidaiwsidai dwa</p>
+            </div>
+            <div class="rightMessages">
+                <span>Username</span>
+                <p>adawd awdawd,law;dm awkmdakw mdaw dawda</p>
+            </div>
         </div>
-        <div class="rightMessages">
-            <span>Username</span>
-            <p>adawd awdawd,law;dm awkmdakw mdaw dawda</p>
-        </div>
-    </div>
-        <form action="" class="needs-validation messageForm" novalidate>
-            <input type="text" class="messageInput" placeholder="eg. Hello" required>
+        <form id="form" action="" class="needs-validation messageForm" novalidate>
+            <input type="text" id="input" class="messageInput" placeholder="eg. Hello" required>
             <button>Send</button>
         </form>
-
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/socketio.js"></script>
+<script>
+    const username = '<%- currentUser.username%>'
+</script>

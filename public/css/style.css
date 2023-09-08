@@ -2,7 +2,9 @@ body , html{
     margin: 0;
     padding: 0;
     box-sizing: 0;
-    background-image: linear-gradient(to bottom left , #C44C8C, #254eae)
+    background-image: linear-gradient(to bottom left , #C44C8C, #254eae);
+    height: 100%;
+    width: 100%;
 }
 .error{
     position: absolute;
