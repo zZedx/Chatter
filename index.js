@@ -13,6 +13,8 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const sharedsession = require("express-socket.io-session");
+require('dotenv').config()
+const mongoStore = require('connect-mongo')
 
 
 const ExpressError = require('./utils/ExpressError')
@@ -22,7 +24,9 @@ const Message = require('./models/messages')
 
 const User = require('./models/user')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Chatter')
+const dbUrl = process.env.DB_URL
+// 'mongodb://127.0.0.1:27017/Chatter'
+mongoose.connect(dbUrl)
     .then(() => {
         console.log('Mongoose Running')
     })
@@ -30,7 +34,16 @@ mongoose.connect('mongodb://127.0.0.1:27017/Chatter')
         console.log(e);
     })
 
+const store = mongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+})
+
 const sessionConfig = session({
+    store,
     name: 'localsession',
     secret: 'this is secret',
     resave: false,
@@ -77,14 +90,14 @@ app.post('/register', express.json(), CatchAsync(async (req, res, next) => {
     try {
         const { username, password } = req.body
         const user = new User({ username });
-        const registeredUser = await User.register(user , password);
+        const registeredUser = await User.register(user, password);
         // await user.save();
         req.login(registeredUser, (err) => {
-            if (err){
+            if (err) {
                 console.log('err')
                 return next(err)
             }
-                return res.redirect('/chatter')
+            return res.redirect('/chatter')
         })
     }
     catch (e) {
@@ -118,35 +131,34 @@ app.use('/', (req, res, next) => {
     if (req.user) {
         next()
     } else {
-        req.flash('error' , 'Login Required')
+        req.flash('error', 'Login Required')
         res.redirect('/login')
     }
 })
 
 io.use(sharedsession(sessionConfig, {
     autoSave: true // Optional, saves session data back to session store
-  }));
+}));
 
-io.on('connection',(socket ) => {
+io.on('connection', (socket) => {
     const currentUser = socket.handshake.session.UserData;
-    io.emit('user connected' , currentUser.username)
-    socket.on('chat message', async(msg) => {
-        const message = new Message({message:msg})
+    io.emit('user connected', currentUser.username)
+    socket.on('chat message', async (msg) => {
+        const message = new Message({ message: msg })
         message.author = currentUser
         await message.save()
         await message.populate('author')
-        console.log(message)
-        io.emit('chat message' , message , currentUser._id)
-      });
+        // console.log(message)
+        io.emit('chat message', message, currentUser._id)
+    });
     socket.on('user disconnected', () => {
         io.emit('user connected')
-      });
+    });
 });
 
-app.get('/chatter', async(req, res) => {
+app.get('/chatter', async (req, res) => {
     const allMessages = await Message.find({}).populate('author').exec();
-    console.log(allMessages)
-    res.render('chatter', {allMessages})
+    res.render('chatter', { allMessages })
 })
 
 app.use('*', (req, res, next) => {
