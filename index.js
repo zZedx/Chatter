@@ -142,6 +142,7 @@ io.use(sharedsession(sessionConfig, {
 
 io.on('connection', (socket ,next) => {
     try{
+
         const currentUser = socket.handshake.session.UserData;
         io.emit('user connected', currentUser.username)
         socket.on('chat message', async (msg) => {
@@ -151,12 +152,12 @@ io.on('connection', (socket ,next) => {
             await message.populate('author')
             io.emit('chat message', message, currentUser._id)
         });
-        }catch(e){
-        next(new ExpressError("Page Not Found", 401))
-        }
         socket.on('user disconnected', () => {
             io.emit('user connected')
         });
+    }catch(e){
+        socket.emit('error', { message: 'An error occurred.' });
+    }
 });
 
 app.get('/chatter', async (req, res) => {
