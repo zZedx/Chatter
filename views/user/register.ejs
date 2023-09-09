@@ -1,6 +1,10 @@
 <%- layout('/layouts/boilerplate') %>
 
   <div class="registerForm shadow">
+    <div class="alert alert-danger alert-dismissible fade show userFlash text-center" role="alert">
+      <p>User Already Exists</p>
+      <button type="button" class="btn-close alertbtn" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
     <h1 class="text-center my-5">REGISTER</h1>
     <form action="/register" method="post" class="needs-validation" id="form" novalidate>
       <input type="text" class="username regUsername form-control" name="username" placeholder="Username" required>

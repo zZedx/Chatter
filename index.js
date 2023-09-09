@@ -15,7 +15,8 @@ const io = new Server(server);
 const sharedsession = require("express-socket.io-session");
 require('dotenv').config()
 const mongoStore = require('connect-mongo')
-
+const sanitizeHtml = require('sanitize-html')
+const mongoSanitize = require('express-mongo-sanitize');
 
 const ExpressError = require('./utils/ExpressError')
 const CatchAsync = require('./utils/CatchAsync')
@@ -69,6 +70,19 @@ app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+    mongoSanitize({
+      allowDots: true,
+      replaceWith: '_',
+    }),
+  );
+
+const isLoggedin = (req,res,next)=>{
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    next()
+}
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success')
@@ -85,22 +99,22 @@ app.get('/register', (req, res) => {
     res.render('user/register')
 })
 
-// app.use(express.json());
-app.post('/register', express.json(), CatchAsync(async (req, res, next) => {
+app.post('/register', express.json(), CatchAsync(async (req, res) => {
     try {
         const { username, password } = req.body
         const user = new User({ username });
         const registeredUser = await User.register(user, password);
-        // await user.save();
+        // res.redirect('/login')
         req.login(registeredUser, (err) => {
             if (err) {
-                console.log('err')
                 return next(err)
+            }else{
+                req.session.UserData = req.user
+                return res.redirect('/chatter')
             }
-            return res.redirect('/chatter')
         })
     }
-    catch (e) {
+    catch(err){
         if (e.message.includes('E11000')) {
             e.message = "A user already exist with this username."
         }
@@ -114,6 +128,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), CatchAsync(async (req, res) => {
     req.session.UserData = req.user
+    // req.flash('success' , 'Logged In')
     res.redirect('/chatter')
 }))
 
@@ -123,47 +138,68 @@ app.get('/logout', (req, res) => {
             return next(err)
         }
     });
-    req.flash('success', 'Logged Out')
+    req.flash('success','Logged Out')
     res.redirect('/')
 })
 
-app.use('/', (req, res, next) => {
-    if (req.user) {
+app.use('*', (req, res, next) => {
+    if (req.isAuthenticated()) {
         next()
-    } else {
+    }else{
         req.flash('error', 'Login Required')
         res.redirect('/login')
     }
 })
 
-io.use(sharedsession(sessionConfig, {
-    autoSave: true // Optional, saves session data back to session store
-}));
+app.get('/deleteAllMessages',isLoggedin,async(req,res)=>{
+    if(req.user.admin){
+        await Message.deleteMany({})
+    }else{
+        req.flash('error' , 'Only Admin can clear messages')
+    }
+    res.redirect('/chatter')
+})
 
-io.on('connection', (socket ,next) => {
+app.get('/chatter', isLoggedin,async (req, res) => {
+    const allMessages = await Message.find({}).populate('author').exec();
+    res.render('chatter', { allMessages })
+})
+
+io.use(sharedsession(sessionConfig))
+
+io.use((socket, next) => {
+    const { handshake } = socket;
+    if (handshake.session && handshake.session.passport && handshake.session.passport.user) {
+        // User is authenticated, allow the connection
+        return next();
+    }
+    // User is not authenticated, reject the connection
+    return next(new Error('Authentication failed'));
+});
+
+io.on('connection',(socket) => {
+    const currentUser = socket.handshake.session.UserData;
     try{
-
-        const currentUser = socket.handshake.session.UserData;
         io.emit('user connected', currentUser.username)
+        console.log('user connected')
         socket.on('chat message', async (msg) => {
+            if((await Message.find()).length >50){
+                await Message.deleteMany({})
+            }
             const message = new Message({ message: msg })
             message.author = currentUser
             await message.save()
             await message.populate('author')
             io.emit('chat message', message, currentUser._id)
         });
-        socket.on('user disconnected', () => {
-            io.emit('user connected')
+        socket.on('disconnect', () => {
+            console.log('user disconnected')
+            io.emit('user disconnected' , currentUser.username)
         });
     }catch(e){
         socket.emit('error', { message: 'An error occurred.' });
     }
 });
-
-app.get('/chatter', async (req, res) => {
-    const allMessages = await Message.find({}).populate('author').exec();
-    res.render('chatter', { allMessages })
-})
 
 app.use('*', (req, res, next) => {
     next(new ExpressError("Page Not Found", 401))

@@ -37,6 +37,10 @@
     overflow-y: scroll;
     /* background-color: red; */
 }
+.messages p{
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
 .messages::-webkit-scrollbar {
     display: none;
   }
@@ -55,7 +59,7 @@
 .leftMessages{
     /* background-color: yellow; */
     margin-right: 50%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .leftMessages p{
     border-radius: 10px;
@@ -69,7 +73,7 @@
 .rightMessages{
     /* background-color: pink; */
     margin-left: 50%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .rightMessages p{
     margin-bottom: 0;

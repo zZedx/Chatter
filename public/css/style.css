@@ -16,8 +16,10 @@ body , html{
     width: 60%;
     /* height: 40%; */
     text-align: center;
+    z-index: 11;
 }
 .flash{
+    z-index: 11;
     /* height: fit-content; */
     position: absolute;
     margin-left: auto;

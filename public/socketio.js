@@ -39,7 +39,11 @@ socket.on('user connected' ,function(username){
     userFlashText.innerText = `${username} Joined`
     userFlash.style.display = 'block'
 })
-socket.on('user disconneted' ,function(username){
+socket.on('user disconnected' ,function(username){
     userFlashText.innerText = `${username} Disconnected`
     userFlash.style.display = 'block'
+})
+
+socket.on('error' , function(msg){
+  window.location.href = '/login';
 })
