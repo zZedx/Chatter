@@ -31,8 +31,8 @@
 .messages{
     /* background-color: red; */
     /* flex: 1; */
-    height: 83.37vh;
-    padding: 2vw;
+    /* height: 83.37vh; */
+    padding: 1vw;
     font-size: 1rem;
     overflow-y: scroll;
     /* background-color: red; */
@@ -40,6 +40,7 @@
 .messages p{
     max-width: 100%;
     overflow-wrap: break-word;
+    /* background-color: #d6681f !important; */
 }
 .messages::-webkit-scrollbar {
     display: none;
@@ -47,46 +48,56 @@
 .messages span{
     color: rgb(255, 255, 255);
     /* font-weight: bold; */
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     background-color: #C23373;
     padding: 2px 8px;
     border-radius: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    width: fit-content;
+    /* width: fit-content; */
     display: block;
 }
 .leftMessages{
-    /* background-color: yellow; */
-    margin-right: 50%;
+    margin-right: 40%;
+    max-width: 60%;
+    width: fit-content;
+    border: 2px solid #C23373;
+    border-radius: 10px;
     margin-top: 10px;
 }
 .leftMessages p{
     border-radius: 10px;
     border-top-left-radius: 0;
-    padding: 10px 15px;
+    border-top-right-radius: 0;
+    padding: 8px;
     background-color: #FFC7EA;
-    width: fit-content;
+    /* width: fit-content; */
     margin-bottom: 0;
 }
 
 .rightMessages{
-    /* background-color: pink; */
-    margin-left: 50%;
+    width: fit-content;
+    border: 2px solid #C23373;
+    border-radius: 10px;
+    max-width: 60%;
+    margin-left: auto;
     margin-top: 10px;
 }
 .rightMessages p{
+    overflow-wrap: break-word;
     margin-bottom: 0;
-    padding: 10px 15px;
+    padding: 8px;
+    text-align: right;
     border-radius: 10px;
     border-top-right-radius: 0;
+    border-top-left-radius: 0;
     /* background-color: rgb(158, 245, 158); */
     background-color: #FFC7EA;
-    width: fit-content;
-    margin-left: auto;
+    /* width: fit-content; */
+    /* margin-left: auto; */
 }
 .rightMessages span{
-    margin-left: auto;
+    text-align: right;
     display: block;
     /* background-color: red; */
 }
