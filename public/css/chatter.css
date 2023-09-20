@@ -31,7 +31,7 @@
 .messages{
     /* background-color: red; */
     /* flex: 1; */
-    /* height: 83.37vh; */
+    height: 83.37vh;
     padding: 1vw;
     font-size: 1rem;
     overflow-y: scroll;
